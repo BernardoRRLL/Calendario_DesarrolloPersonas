@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc; /* Un gris de fondo mucho más suave y premium */
+  color: #0f172a;
+}
+
+/* Forzar que FullCalendar use la misma tipografía y bordes más limpios */
+.fc {
+  font-family: 'Inter', sans-serif !important;
+}
+.fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid {
+  border-color: #f1f5f9 !important;
+}
+.fc-button-primary {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border: 1px solid #e2e8f0 !important;
+  text-transform: capitalize !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+.fc-button-active {
+  background-color: #f1f5f9 !important;
+}
+/* Hacer que solo el input de fecha abra el calendario al hacer clic en cualquier parte */
+input[type="date"] {
+  position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+/* Las cajas de 'time' quedan nativas para permitir edición directa por teclado */
