@@ -16,7 +16,7 @@ import { supabase } from './supabase';
 
 export default function App() {
   const [session, setSession] = useState(null);
-  const [userRole, setUserRole] = useState('admin');
+  const [userRole, setUserRole] = useState('user');
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isReportsModalOpen, setIsReportsModalOpen] = useState(false);
@@ -39,29 +39,33 @@ export default function App() {
   const touchStartY = useRef(0);
   const touchEndX = useRef(0);
   const touchEndY = useRef(0);
-
+  
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
     window.addEventListener('resize', handleResize);
     
     fetchEvents();
 
-    const fetchRole = async (userId) => {
-      const { data } = await supabase.from('user_roles').select('role').eq('user_id', userId).single();
-      if (data) setUserRole(data.role);
+    const fetchRole = async (email) => {
+      const { data, error } = await supabase.from('user_roles').select('role').eq('email', email).single();
+      if (data && !error) {
+        setUserRole(data.role);
+      } else {
+        setUserRole('user');
+      }
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session) fetchRole(session.user.id);
+      if (session?.user?.email) fetchRole(session.user.email);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) {
-        fetchRole(session.user.id);
+      if (session?.user?.email) {
+        fetchRole(session.user.email);
       } else {
-        setUserRole('admin');
+        setUserRole('user');
       }
     });
 
@@ -351,7 +355,7 @@ export default function App() {
               />
             </div>
 
-            {isAdmin && userRole === 'superuser' && (
+            {isAdmin && userRole === 'admin' && (
               <div className="flex gap-2">
                 <button 
                   onClick={() => setIsReportsModalOpen(true)} 
