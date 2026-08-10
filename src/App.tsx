@@ -17,7 +17,6 @@ import { supabase } from './supabase';
 export default function App() {
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState('user');
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isReportsModalOpen, setIsReportsModalOpen] = useState(false);
   
@@ -104,12 +103,8 @@ export default function App() {
     setEvents(formattedEvents);
   };
 
-  const handleAuthAction = async () => {
-    if (session) {
-      await supabase.auth.signOut();
-    } else {
-      setIsLoginModalOpen(true);
-    }
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
   };
 
   const handleSaveEvent = (savedEvent) => {
@@ -125,10 +120,7 @@ export default function App() {
   };
 
   const handleEventClick = (clickInfo) => {
-    if (!isAdmin) {
-      alert('Solo los administradores pueden editar o eliminar reservas.');
-      return;
-    }
+    if (!isAdmin) return;
     setTooltip({ show: false, x: 0, y: 0, data: null });
     
     const { event } = clickInfo;
@@ -152,7 +144,6 @@ export default function App() {
 
   const handleDateSelect = (selectInfo) => {
     if (!isAdmin) {
-      alert('Solo los administradores pueden crear reservas.');
       selectInfo.view.calendar.unselect();
       return;
     }
@@ -302,144 +293,150 @@ export default function App() {
         }
       `}</style>
 
-      <Header isAdmin={isAdmin} onLogin={handleAuthAction} />
+      <Header session={session} onLogout={handleLogout} />
 
-      <main className="flex-grow w-full max-w-7xl mx-auto px-4 py-8">
-        
-        <div 
-          className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white px-6 py-5 rounded-2xl border border-gray-100" 
-          style={{ marginTop: '1.5rem', marginBottom: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
-        >
-          <div className="w-full md:w-3/4 flex flex-wrap" style={{ gap: '3px' }}>
-            <button
-              onClick={() => setSelectedRooms([])}
-              className="room-filter-btn"
-              style={{ 
-                backgroundColor: selectedRooms.length === 0 ? '#0f172a' : '#f1f5f9', 
-                color: selectedRooms.length === 0 ? '#ffffff' : '#475569',
-                border: selectedRooms.length === 0 ? '1px solid transparent' : '1px solid #e2e8f0',
-              }}
-            >
-              Todas
-            </button>
-            {ROOMS.map(room => {
-              const isSelected = selectedRooms.includes(room.id);
-              return (
-                <button
-                  key={room.id}
-                  onClick={() => {
-                    if (isSelected) { setSelectedRooms(selectedRooms.filter(id => id !== room.id)); } 
-                    else { setSelectedRooms([...selectedRooms, room.id]); }
-                  }}
-                  className="room-filter-btn"
-                  style={{
-                    backgroundColor: isSelected ? room.color : '#ffffff',
-                    color: isSelected ? '#ffffff' : '#475569',
-                    border: isSelected ? '1px solid transparent' : '1px solid #e2e8f0',
-                    boxShadow: isSelected ? '0 4px 14px 0 rgba(0,0,0,0.1)' : 'none',
-                  }}
-                >
-                  {room.name}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="w-full md:w-1/4 flex flex-wrap items-center md:justify-end gap-3">
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <CalendarIcon size={16} color="#64748b" style={{ position: 'absolute', left: '10px', pointerEvents: 'none' }} />
-              <input 
-                type="date" 
-                onChange={handleQuickDateChange}
-                className="date-picker-responsive"
-              />
+      {!session ? (
+        <main className="flex-grow w-full flex items-center justify-center bg-slate-50">
+           {/* El fondo vacío asegura que el calendario no se renderice detrás del modal de login */}
+        </main>
+      ) : (
+        <main className="flex-grow w-full max-w-7xl mx-auto px-4 py-8">
+          
+          <div 
+            className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white px-6 py-5 rounded-2xl border border-gray-100" 
+            style={{ marginTop: '1.5rem', marginBottom: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+          >
+            <div className="w-full md:w-3/4 flex flex-wrap" style={{ gap: '3px' }}>
+              <button
+                onClick={() => setSelectedRooms([])}
+                className="room-filter-btn"
+                style={{ 
+                  backgroundColor: selectedRooms.length === 0 ? '#0f172a' : '#f1f5f9', 
+                  color: selectedRooms.length === 0 ? '#ffffff' : '#475569',
+                  border: selectedRooms.length === 0 ? '1px solid transparent' : '1px solid #e2e8f0',
+                }}
+              >
+                Todas
+              </button>
+              {ROOMS.map(room => {
+                const isSelected = selectedRooms.includes(room.id);
+                return (
+                  <button
+                    key={room.id}
+                    onClick={() => {
+                      if (isSelected) { setSelectedRooms(selectedRooms.filter(id => id !== room.id)); } 
+                      else { setSelectedRooms([...selectedRooms, room.id]); }
+                    }}
+                    className="room-filter-btn"
+                    style={{
+                      backgroundColor: isSelected ? room.color : '#ffffff',
+                      color: isSelected ? '#ffffff' : '#475569',
+                      border: isSelected ? '1px solid transparent' : '1px solid #e2e8f0',
+                      boxShadow: isSelected ? '0 4px 14px 0 rgba(0,0,0,0.1)' : 'none',
+                    }}
+                  >
+                    {room.name}
+                  </button>
+                );
+              })}
             </div>
 
-            {isAdmin && userRole === 'admin' && (
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => setIsReportsModalOpen(true)} 
-                  title="Ver Reportes"
-                  className="transition hover:bg-slate-200"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', boxSizing: 'border-box' }}
-                >
-                  <BarChart3 className="w-5 h-5" />
-                </button>
-                <button 
-                  onClick={() => setIsAuditModalOpen(true)} 
-                  title="Ver Auditoría"
-                  className="transition hover:bg-slate-200"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', boxSizing: 'border-box' }}
-                >
-                  <ClipboardList className="w-5 h-5" />
-                </button>
+            <div className="w-full md:w-1/4 flex flex-wrap items-center md:justify-end gap-3">
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <CalendarIcon size={16} color="#64748b" style={{ position: 'absolute', left: '10px', pointerEvents: 'none' }} />
+                <input 
+                  type="date" 
+                  onChange={handleQuickDateChange}
+                  className="date-picker-responsive"
+                />
               </div>
-            )}
-          </div>
-        </div>
 
-        <div 
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          className="bg-white p-4 md:p-6 rounded-2xl border border-gray-100"
-          style={{ boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)' }}
-        >
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            views={{
-              timeGridFourDay: {
-                type: 'timeGrid',
-                duration: { days: 4 },
-                buttonText: '4 Días'
-              }
-            }}
-            initialView={isMobile ? 'timeGridFourDay' : 'timeGridWeek'}
-            
-            windowResize={(arg) => {
-              const mobile = window.innerWidth < 640;
-              if (mobile && arg.view.type === 'timeGridWeek') {
-                arg.view.calendar.changeView('timeGridFourDay');
-              } else if (!mobile && arg.view.type === 'timeGridFourDay') {
-                arg.view.calendar.changeView('timeGridWeek');
-              }
-            }}
-
-            firstDay={1}
-            headerToolbar={{ 
-              left: 'prev,next today', 
-              center: 'title', 
-              right: isMobile ? 'dayGridMonth,timeGridFourDay,timeGridDay' : 'dayGridMonth,timeGridWeek,timeGridDay' 
-            }}
-            buttonText={{ today: 'Hoy', month: 'Mes', week: 'Semana', timeGridFourDay: '4 Días', day: 'Día' }}
-            allDaySlot={false}
-            slotMinTime="07:00:00"
-            slotMaxTime="22:00:00"
-            locale="es"
-            events={filteredEvents}
-            height="auto"
-            
-            selectable={true}
-            selectMirror={true}
-            select={handleDateSelect}
-            
-            eventClick={handleEventClick}
-            eventMouseEnter={handleMouseEnter}
-            eventMouseLeave={handleMouseLeave}
-            eventContent={(eventInfo) => {
-              const { extendedProps } = eventInfo.event;
-              return (
-                <div className="p-1 md:p-1.5 overflow-hidden rounded-md flex flex-col items-start justify-start h-full" style={{ borderLeft: '3px solid rgba(255,255,255,0.7)' }}>
-                  <div style={{ fontSize: '9px', opacity: 0.9, marginBottom: '2px', fontWeight: '600' }}>
-                    {eventInfo.timeText}
-                  </div>
-                  <div className="font-bold text-[10px] md:text-[12px] leading-tight text-white">{extendedProps.roomName}</div>
+              {isAdmin && userRole === 'admin' && (
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setIsReportsModalOpen(true)} 
+                    title="Ver Reportes"
+                    className="transition hover:bg-slate-200"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', boxSizing: 'border-box' }}
+                  >
+                    <BarChart3 className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => setIsAuditModalOpen(true)} 
+                    title="Ver Auditoría"
+                    className="transition hover:bg-slate-200"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', boxSizing: 'border-box' }}
+                  >
+                    <ClipboardList className="w-5 h-5" />
+                  </button>
                 </div>
-              );
-            }}
-          />
-        </div>
-      </main>
+              )}
+            </div>
+          </div>
+
+          <div 
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            className="bg-white p-4 md:p-6 rounded-2xl border border-gray-100"
+            style={{ boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)' }}
+          >
+            <FullCalendar
+              ref={calendarRef}
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              views={{
+                timeGridFourDay: {
+                  type: 'timeGrid',
+                  duration: { days: 4 },
+                  buttonText: '4 Días'
+                }
+              }}
+              initialView={isMobile ? 'timeGridFourDay' : 'timeGridWeek'}
+              
+              windowResize={(arg) => {
+                const mobile = window.innerWidth < 640;
+                if (mobile && arg.view.type === 'timeGridWeek') {
+                  arg.view.calendar.changeView('timeGridFourDay');
+                } else if (!mobile && arg.view.type === 'timeGridFourDay') {
+                  arg.view.calendar.changeView('timeGridWeek');
+                }
+              }}
+
+              firstDay={1}
+              headerToolbar={{ 
+                left: 'prev,next today', 
+                center: 'title', 
+                right: isMobile ? 'dayGridMonth,timeGridFourDay,timeGridDay' : 'dayGridMonth,timeGridWeek,timeGridDay' 
+              }}
+              buttonText={{ today: 'Hoy', month: 'Mes', week: 'Semana', timeGridFourDay: '4 Días', day: 'Día' }}
+              allDaySlot={false}
+              slotMinTime="07:00:00"
+              slotMaxTime="22:00:00"
+              locale="es"
+              events={filteredEvents}
+              height="auto"
+              
+              selectable={true}
+              selectMirror={true}
+              select={handleDateSelect}
+              
+              eventClick={handleEventClick}
+              eventMouseEnter={handleMouseEnter}
+              eventMouseLeave={handleMouseLeave}
+              eventContent={(eventInfo) => {
+                const { extendedProps } = eventInfo.event;
+                return (
+                  <div className="p-1 md:p-1.5 overflow-hidden rounded-md flex flex-col items-start justify-start h-full" style={{ borderLeft: '3px solid rgba(255,255,255,0.7)' }}>
+                    <div style={{ fontSize: '9px', opacity: 0.9, marginBottom: '2px', fontWeight: '600' }}>
+                      {eventInfo.timeText}
+                    </div>
+                    <div className="font-bold text-[10px] md:text-[12px] leading-tight text-white">{extendedProps.roomName}</div>
+                  </div>
+                );
+              }}
+            />
+          </div>
+        </main>
+      )}
 
       <Footer />
       
@@ -481,8 +478,8 @@ export default function App() {
       />
 
       <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
+        isOpen={!session} 
+        onClose={() => {}} 
       />
 
       <AuditModal 
@@ -495,7 +492,7 @@ export default function App() {
         onClose={() => setIsReportsModalOpen(false)} 
       />
 
-      {tooltip.show && tooltip.data && !isMobile && (
+      {tooltip.show && tooltip.data && !isMobile && session && (
         <div 
           style={{
             position: 'fixed',
