@@ -1,7 +1,7 @@
 import React from 'react';
-import { Lock, Unlock } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 
-export default function Header({ isAdmin, onLogin }) {
+export default function Header({ session, onLogout }) {
   return (
     <header style={{ backgroundColor: '#36424a', width: '100%' }}>
       <div style={{
@@ -21,7 +21,7 @@ export default function Header({ isAdmin, onLogin }) {
           style={{ height: 'clamp(30px, 8vw, 60px)', width: 'auto', objectFit: 'contain' }} 
         />
         
-        {/* 2. Título Central (Cambié el texto para este proyecto) */}
+        {/* 2. Título Central */}
         <h1 style={{ 
           color: '#ffffff', 
           margin: 0, 
@@ -34,29 +34,25 @@ export default function Header({ isAdmin, onLogin }) {
           Reserva de Salas - Desarrollo de Personas
         </h1>
         
-        {/* 3. Bloque Derecho: Logo + Botón de Acceso */}
+        {/* 3. Bloque Derecho: Logo + Botón de Salir (Solo visible si hay sesión) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(5px, 2vw, 15px)' }}>
           <img 
             src="/somos_protagonistas.png" 
             alt="Somos Protagonistas" 
-            className="hidden sm:block" // Ocultamos el 2do logo en móviles muy pequeños para no romper el layout
+            className="hidden sm:block" 
             style={{ height: 'clamp(30px, 8vw, 60px)', width: 'auto', objectFit: 'contain' }} 
           />
           
-          <button 
-            onClick={onLogin}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg border font-medium transition ${
-              isAdmin 
-                ? 'bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100' 
-                : 'bg-white/10 border-white/30 text-white hover:bg-white/20'
-            }`}
-          >
-            {isAdmin ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-            {/* El texto del botón desaparece en móvil, queda solo el ícono */}
-            <span className="hidden md:inline text-sm">
-              {isAdmin ? 'Admin' : 'Acceso'}
-            </span>
-          </button>
+          {session && (
+            <button 
+              onClick={onLogout}
+              title="Cerrar Sesión"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border font-medium transition bg-white/10 border-white/30 text-white hover:bg-white/20"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden md:inline text-sm">Salir</span>
+            </button>
+          )}
         </div>
       </div>
       
