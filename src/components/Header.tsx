@@ -57,8 +57,7 @@ export default function Header({ session, userRole, onLogout, onOpenConfig }) {
             justifyContent: 'flex-end',
             alignItems: 'center',
             padding: '8px 20px',
-            maxWidth: '1400px',
-            margin: '0 auto',
+            width: '100%',
             gap: '15px',
             color: '#ffffff',
             fontSize: '0.9rem'
