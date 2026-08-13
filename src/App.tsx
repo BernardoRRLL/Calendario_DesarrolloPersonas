@@ -10,6 +10,7 @@ import BookingModal from './components/BookingModal';
 import LoginModal from './components/LoginModal';
 import AuditModal from './components/AuditModal';
 import ReportsModal from './components/ReportsModal';
+import ConfigModal from './components/ConfigModal';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { supabase } from './supabase';
@@ -19,6 +20,7 @@ export default function App() {
   const [userRole, setUserRole] = useState('user');
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isReportsModalOpen, setIsReportsModalOpen] = useState(false);
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   
   const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -293,7 +295,11 @@ export default function App() {
         }
       `}</style>
 
-      <Header session={session} onLogout={handleLogout} />
+      <Header 
+        session={session} 
+        onLogout={handleLogout} 
+        onOpenConfig={() => setIsConfigModalOpen(true)} 
+      />
 
       {!session ? (
         <main className="flex-grow w-full flex items-center justify-center bg-slate-50">
@@ -490,6 +496,12 @@ export default function App() {
       <ReportsModal 
         isOpen={isReportsModalOpen} 
         onClose={() => setIsReportsModalOpen(false)} 
+      />
+      
+      {/* Nuevo Modal de Configuración (Cambio de Clave) */}
+      <ConfigModal 
+        isOpen={isConfigModalOpen} 
+        onClose={() => setIsConfigModalOpen(false)} 
       />
 
       {tooltip.show && tooltip.data && !isMobile && session && (
