@@ -1,72 +1,102 @@
 import React from 'react';
-import { LogOut, Settings } from 'lucide-react';
+import { Settings, User } from 'lucide-react';
 
-export default function Header({ session, onLogout, onOpenConfig }) {
+export default function Header({ session, userRole, onLogout, onOpenConfig }) {
   return (
-    <header style={{ backgroundColor: '#36424a', width: '100%' }}>
-      <div style={{
-        display: 'flex',
-        flexWrap: 'nowrap',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 'clamp(10px, 2vw, 15px) 15px',
-        maxWidth: '1300px',
-        margin: '0 auto',
-        gap: '10px'
-      }}>
-        {/* 1. Logo Izquierdo (Ruta relativa ajustada) */}
-        <img 
-          src="./Codelco_Ventanas.png" 
-          alt="Codelco" 
-          style={{ height: 'clamp(30px, 8vw, 60px)', width: 'auto', objectFit: 'contain' }} 
-        />
-        
-        {/* 2. Título Central */}
-        <h1 style={{ 
-          color: '#ffffff', 
-          margin: 0, 
-          fontSize: 'clamp(1rem, 4vw, 2.2rem)',
-          fontWeight: 600, 
-          textAlign: 'center', 
-          flex: 1,
-          lineHeight: 1.1
+    <header style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* 1. Fila Superior: Fondo Gris, Logos y Título */}
+      <div style={{ backgroundColor: '#36424a', width: '100%' }}>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'nowrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: 'clamp(10px, 2vw, 15px) 20px',
+          maxWidth: '1400px',
+          margin: '0 auto',
+          gap: '10px'
         }}>
-          Reserva de Salas - Desarrollo de Personas
-        </h1>
-        
-        {/* 3. Bloque Derecho: Logo + Botones (Solo visibles si hay sesión) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(5px, 2vw, 15px)' }}>
+          {/* Logo Izquierdo */}
+          <img 
+            src="./Codelco_Ventanas.png" 
+            alt="Codelco" 
+            style={{ height: 'clamp(35px, 8vw, 65px)', width: 'auto', objectFit: 'contain' }} 
+          />
+          
+          {/* Título Central */}
+          <h1 style={{ 
+            color: '#ffffff', 
+            margin: 0, 
+            fontSize: 'clamp(1.1rem, 4vw, 2.2rem)',
+            fontWeight: 600, 
+            textAlign: 'center', 
+            flex: 1,
+            lineHeight: 1.1
+          }}>
+            Reserva de Salas - Desarrollo de Personas
+          </h1>
+          
+          {/* Logo Derecho */}
           <img 
             src="./somos_protagonistas.png" 
             alt="Somos Protagonistas" 
-            className="hidden sm:block" 
-            style={{ height: 'clamp(30px, 8vw, 60px)', width: 'auto', objectFit: 'contain' }} 
+            style={{ height: 'clamp(35px, 8vw, 65px)', width: 'auto', objectFit: 'contain' }} 
           />
-          
-          {session && (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                onClick={onOpenConfig}
-                title="Cambiar Contraseña"
-                className="flex items-center justify-center p-2 rounded-lg border font-medium transition bg-white/10 border-white/30 text-white hover:bg-white/20"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={onLogout}
-                title="Cerrar Sesión"
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border font-medium transition bg-white/10 border-white/30 text-white hover:bg-white/20"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden md:inline text-sm">Salir</span>
-              </button>
-            </div>
-          )}
         </div>
       </div>
       
-      {/* Línea naranja corporativa */}
+      {/* 2. Fila Intermedia: Línea Naranja */}
       <div style={{ height: '5px', backgroundColor: '#e45302', width: '100%' }}></div>
+
+      {/* 3. Fila Inferior: Barra Turquesa de Controles (Solo visible si hay sesión) */}
+      {session && (
+        <div style={{ backgroundColor: '#0098aa', width: '100%' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            padding: '8px 20px',
+            maxWidth: '1400px',
+            margin: '0 auto',
+            gap: '15px',
+            color: '#ffffff',
+            fontSize: '0.9rem'
+          }}>
+            
+            {/* Información del Usuario */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <User className="w-4 h-4" />
+              <span style={{ fontWeight: 500 }}>
+                {session.user.email} {userRole === 'admin' ? '(Admin)' : '(Usuario)'}
+              </span>
+            </div>
+
+            {/* Ícono de Configuración */}
+            <button 
+              onClick={onOpenConfig}
+              title="Cambiar Contraseña"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px', backgroundColor: 'transparent', border: 'none', color: '#ffffff', cursor: 'pointer', transition: 'opacity 0.2s' }}
+              onMouseOver={(e) => e.currentTarget.style.opacity = '0.7'}
+              onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+
+            {/* Botón de Cerrar Sesión */}
+            <button 
+              onClick={onLogout}
+              title="Cerrar Sesión"
+              style={{ display: 'flex', alignItems: 'center', padding: '4px 12px', backgroundColor: 'transparent', border: '1px solid #ffffff', borderRadius: '4px', color: '#ffffff', cursor: 'pointer', fontWeight: 500, transition: 'background-color 0.2s' }}
+              onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)'}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              Cerrar Sesión
+            </button>
+            
+          </div>
+        </div>
+      )}
     </header>
   );
 }
