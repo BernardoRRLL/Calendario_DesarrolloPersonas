@@ -1,7 +1,7 @@
 import React from 'react';
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 
-export default function Header({ session, onLogout }) {
+export default function Header({ session, onLogout, onOpenConfig }) {
   return (
     <header style={{ backgroundColor: '#36424a', width: '100%' }}>
       <div style={{
@@ -34,7 +34,7 @@ export default function Header({ session, onLogout }) {
           Reserva de Salas - Desarrollo de Personas
         </h1>
         
-        {/* 3. Bloque Derecho: Logo + Botón de Salir (Ruta relativa ajustada) */}
+        {/* 3. Bloque Derecho: Logo + Botones (Solo visibles si hay sesión) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(5px, 2vw, 15px)' }}>
           <img 
             src="./somos_protagonistas.png" 
@@ -44,14 +44,23 @@ export default function Header({ session, onLogout }) {
           />
           
           {session && (
-            <button 
-              onClick={onLogout}
-              title="Cerrar Sesión"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border font-medium transition bg-white/10 border-white/30 text-white hover:bg-white/20"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden md:inline text-sm">Salir</span>
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button 
+                onClick={onOpenConfig}
+                title="Cambiar Contraseña"
+                className="flex items-center justify-center p-2 rounded-lg border font-medium transition bg-white/10 border-white/30 text-white hover:bg-white/20"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={onLogout}
+                title="Cerrar Sesión"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border font-medium transition bg-white/10 border-white/30 text-white hover:bg-white/20"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden md:inline text-sm">Salir</span>
+              </button>
+            </div>
           )}
         </div>
       </div>
