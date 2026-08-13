@@ -310,8 +310,8 @@ export default function App() {
         <main className="flex-grow w-full max-w-7xl mx-auto px-4 py-8">
           
           <div 
-            className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white px-6 py-5 rounded-2xl border border-gray-100" 
-            style={{ marginTop: '1.5rem', marginBottom: '2rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+            className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-2" 
+            style={{ marginTop: '0.5rem', marginBottom: '1.5rem' }}
           >
             <div className="w-full md:w-3/4 flex flex-wrap" style={{ gap: '3px' }}>
               <button
