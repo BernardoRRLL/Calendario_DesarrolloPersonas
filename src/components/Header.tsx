@@ -14,9 +14,9 @@ export default function Header({ session, onLogout }) {
         margin: '0 auto',
         gap: '10px'
       }}>
-        {/* 1. Logo Izquierdo */}
+        {/* 1. Logo Izquierdo (Ruta relativa ajustada) */}
         <img 
-          src="/Codelco_Ventanas.png" 
+          src="./Codelco_Ventanas.png" 
           alt="Codelco" 
           style={{ height: 'clamp(30px, 8vw, 60px)', width: 'auto', objectFit: 'contain' }} 
         />
@@ -34,10 +34,10 @@ export default function Header({ session, onLogout }) {
           Reserva de Salas - Desarrollo de Personas
         </h1>
         
-        {/* 3. Bloque Derecho: Logo + Botón de Salir (Solo visible si hay sesión) */}
+        {/* 3. Bloque Derecho: Logo + Botón de Salir (Ruta relativa ajustada) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(5px, 2vw, 15px)' }}>
           <img 
-            src="/somos_protagonistas.png" 
+            src="./somos_protagonistas.png" 
             alt="Somos Protagonistas" 
             className="hidden sm:block" 
             style={{ height: 'clamp(30px, 8vw, 60px)', width: 'auto', objectFit: 'contain' }} 
