@@ -297,6 +297,7 @@ export default function App() {
 
       <Header 
         session={session} 
+        userRole={userRole}
         onLogout={handleLogout} 
         onOpenConfig={() => setIsConfigModalOpen(true)} 
       />
